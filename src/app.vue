@@ -457,7 +457,7 @@ function generate() {
       </div>
       <p v-if="answer.index >= 0 && answer.value >= 0">
         Відповідь: μ<sub>нд</sub>(x<sub>{{ answer.index + 1 }}</sub
-        >) = {{ answer.value }}
+        >) = {{ answer.value.toFixed(2) }}
       </p>
     </main>
   </div>
