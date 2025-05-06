@@ -1,6 +1,6 @@
 import type { AdjMatrix, AdjMatrixValue, Relation } from "./types";
 
-//test
+//test!
 
 export class PreferenceGraph {
   private prefAdj = new Map<number, Set<number>>();
