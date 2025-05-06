@@ -98,6 +98,12 @@ function solve() {
 
   answer.value = solver.answer;
 }
+
+function generate() {
+  solver.generate(alternativesCount.value, criterionCount.value);
+  weightByCriterion.value = solver.generatedWeightsByCriterion;
+  relationsByCriterion.value = solver.generatedRelationsByCriterion;
+}
 </script>
 
 <template>
@@ -116,6 +122,14 @@ function solve() {
           Кількість критеріїв
           <input type="number" v-model.number="criterionCount" />
         </label>
+        <button
+          v-if="alternativesCount > 0 && criterionCount > 0"
+          class="secondary generate"
+          type="button"
+          @click="generate"
+        >
+          Згенерувати умови задачі з кількості альтернатив та критеріїв
+        </button>
         <fieldset v-if="criterionCount > 0" class="weights">
           <legend>Ваги критеріїв</legend>
           <label v-for="index in criterionCount">
@@ -462,6 +476,10 @@ main {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.generate {
+  width: 100%;
 }
 
 .weights {

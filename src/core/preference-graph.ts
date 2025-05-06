@@ -1,4 +1,4 @@
-import type { AdjMatrix, AdjMatrixValue } from "./types";
+import type { AdjMatrix, AdjMatrixValue, Relation } from "./types";
 
 export class PreferenceGraph {
   private prefAdj = new Map<number, Set<number>>();
@@ -12,6 +12,8 @@ export class PreferenceGraph {
   q2ParetoOptimalSet: number[] = [];
   result: number[] = [];
   answer: { value: number; index: number } = { value: -1, index: -1 };
+  generatedWeightsByCriterion: Record<number, number> = {};
+  generatedRelationsByCriterion: Record<number, Relation[]> = {};
 
   addPreference(x: number, y: number): void {
     console.log(`Adding preference (${x}, ${y})`);
@@ -228,5 +230,66 @@ export class PreferenceGraph {
       index: maxIndex,
       value: maxValue,
     };
+  }
+
+  generate(alternativesCount: number, criterionCount: number) {
+    this.generatedWeightsByCriterion = this.generateWeights(criterionCount);
+
+    this.generatedRelationsByCriterion = this.generateRelationsByCriterion(
+      criterionCount,
+      alternativesCount,
+    );
+  }
+
+  private generateWeights(criterionCount: number): Record<number, number> {
+    const raw = Array.from({ length: criterionCount }, () => Math.random());
+    const sum = raw.reduce((acc, el) => acc + el, 0);
+    const result: Record<number, number> = {};
+
+    for (let i = 0; i < criterionCount; i++) {
+      result[i + 1] = +(raw[i] / sum).toFixed(2);
+    }
+
+    return result;
+  }
+
+  private shuffleAlternatives(alternativesCount: number): number[] {
+    const shuffled = Array.from({ length: alternativesCount }, (_, i) => i + 1);
+
+    for (let i = shuffled.length - 1; i >= 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled;
+  }
+
+  private generateRelationsByCriterion(
+    criterionCount: number,
+    alternativesCount: number,
+  ): Record<number, Relation[]> {
+    const result: Record<number, Relation[]> = {};
+
+    for (let i = 0; i < criterionCount; i++) {
+      const shuffledAlternatives = this.shuffleAlternatives(alternativesCount);
+
+      const relations: Relation[] = [];
+
+      for (let j = 0; j < shuffledAlternatives.length - 1; j++) {
+        const a = shuffledAlternatives[j];
+        const b = shuffledAlternatives[j + 1];
+
+        if (Math.random() > 0.3) {
+          relations.push({ left: a, op: ">", right: b });
+        } else {
+          relations.push({ left: a, op: "=", right: b });
+        }
+      }
+
+      result[i + 1] = relations;
+    }
+
+    return result;
   }
 }
